@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourseCompass - TN 12th Student Recommendation System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header / Banner -->
+    <header class="bg-gradient-to-r from-indigo-900 via-slate-900 to-blue-950 border-b border-indigo-800/40 shadow-xl relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-400 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                        <i class="fa-solid font-bold text-2xl text-white fa-compass"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">CourseCompass</h1>
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">TN Standard</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-400">Smart College Course Recommendation System for Tamil Nadu 12th Students</p>
+                    </div>
+                </div>
+
+                <!-- Mode Navigation Tabs -->
+                <div class="flex bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+                    <button id="nav-finder" onclick="switchTab('finder')" class="px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 bg-indigo-600 text-white shadow-md">
+                        <i class="fa-solid fa-graduation-cap mr-1.5"></i>Course Finder
+                    </button>
+                    <button id="nav-database" onclick="switchTab('database')" class="px-4 py-2 text-xs sm:text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200 transition-all duration-200">
+                        <i class="fa-solid fa-database mr-1.5"></i>All Courses Database
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- TAB 1: COURSE FINDER UI -->
+        <section id="tab-finder" class="space-y-8">
+            <div class="glass-panel rounded-2xl p-6 shadow-2xl border border-slate-800">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+                    <!-- Stream Selection -->
+                    <div class="md:col-span-4">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                            <i class="fa-solid fa-layer-group text-indigo-400 mr-1.5"></i>1. Select 12th Stream / Group
+                        </label>
+                        <select id="input-stream" onchange="fetchRecommendations()" class="w-full bg-slate-900 text-slate-100 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option value="PCM">Maths, Physics, Chemistry (PCM) / Engineering</option>
+                            <option value="PCB">Physics, Chemistry, Biology (PCB) / Medical</option>
+                            <option value="Commerce">Commerce / Accountancy / Economics</option>
+                            <option value="Arts">Arts / Humanities</option>
+                            <option value="Vocational">Vocational / Technical Stream</option>
+                        </select>
+                    </div>
+
+                    <!-- Interest Query Text input -->
+                    <div class="md:col-span-6">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                            <i class="fa-solid fa-brain text-indigo-400 mr-1.5"></i>2. Describe Interests, Skills & Career Goals
+                        </label>
+                        <input type="text" id="input-interests" oninput="fetchRecommendations()" placeholder="e.g., coding, algorithms, software development, machine learning" class="w-full bg-slate-900 text-slate-100 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+
+                    <!-- Top N Selector -->
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                            <i class="fa-solid fa-list-ol text-indigo-400 mr-1.5"></i>Top Results
+                        </label>
+                        <select id="input-topn" onchange="fetchRecommendations()" class="w-full bg-slate-900 text-slate-100 border border-slate-700 rounded-xl px-3 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option value="3">Top 3</option>
+                            <option value="5" selected>Top 5</option>
+                            <option value="10">Top 10</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- Quick Preset Tags -->
+                <div class="mt-4 pt-4 border-t border-slate-800 flex flex-wrap items-center gap-2">
+                    <span class="text-xs text-slate-400 font-medium mr-1">Quick Prompts:</span>
+                    <button onclick="setSamplePrompt('PCM', 'coding, algorithms, software development, machine learning')" class="px-2.5 py-1 text-xs rounded-lg bg-indigo-950 text-indigo-300 border border-indigo-800 hover:bg-indigo-900 transition-all">💻 CS & AI Coding</button>
+                    <button onclick="setSamplePrompt('PCB', 'healthcare, surgery, patient care, diagnosis, medical treatment')" class="px-2.5 py-1 text-xs rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-800 hover:bg-emerald-900 transition-all">🩺 Medical & Healthcare</button>
+                    <button onclick="setSamplePrompt('Commerce', 'banking, stock market, finance, accounting, business analysis')" class="px-2.5 py-1 text-xs rounded-lg bg-amber-950 text-amber-300 border border-amber-800 hover:bg-amber-900 transition-all">📊 Finance & CA</button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold text-slate-100">Recommended Course Pathways</h2>
+                <span id="results-count-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">0 Matches</span>
+            </div>
+
+            <!-- Output Grid -->
+            <div id="results-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Dynamic cards populated here -->
+            </div>
+        </section>
+
+        <!-- TAB 2: ALL COURSES DATABASE VIEWER -->
+        <section id="tab-database" class="hidden space-y-6">
+            <div class="glass-panel rounded-2xl p-6 border border-slate-800">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-database text-amber-400"></i> Tamil Nadu Course Master Registry
+                        </h2>
+                        <p class="text-xs text-slate-400">Browse all loaded higher education courses, eligible streams, and career options.</p>
+                    </div>
+                    <div class="relative max-w-xs w-full">
+                        <input type="text" id="db-search" oninput="filterDatabaseTable()" placeholder="Search courses..." class="w-full bg-slate-900 text-slate-200 border border-slate-700 rounded-xl pl-9 pr-4 py-2 text-xs outline-none focus:border-amber-500">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-800">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">ID</th>
+                                <th class="p-3">Course Name</th>
+                                <th class="p-3">Degree Level</th>
+                                <th class="p-3">Duration</th>
+                                <th class="p-3">Eligible Streams</th>
+                                <th class="p-3">Career Paths</th>
+                            </tr>
+                        </thead>
+                        <tbody id="db-table-body" class="divide-y divide-slate-800/60 bg-slate-950/50">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-6 text-center text-xs text-slate-500">
+        <p>© 2026 CourseCompass TN · Built for Tamil Nadu 12th Standard Students</p>
+    </footer>
+
+    <!-- JavaScript Controller -->
+    <script>
+        let cachedCourses = [];
+
+        function switchTab(tabName) {
+            document.getElementById('tab-finder').classList.toggle('hidden', tabName !== 'finder');
+            document.getElementById('tab-database').classList.toggle('hidden', tabName !== 'database');
+            
+            document.getElementById('nav-finder').className = tabName === 'finder' 
+                ? 'px-4 py-2 text-xs sm:text-sm font-medium rounded-lg bg-indigo-600 text-white shadow-md' 
+                : 'px-4 py-2 text-xs sm:text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200';
+            
+            document.getElementById('nav-database').className = tabName === 'database' 
+                ? 'px-4 py-2 text-xs sm:text-sm font-medium rounded-lg bg-indigo-600 text-white shadow-md' 
+                : 'px-4 py-2 text-xs sm:text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200';
+
+            if (tabName === 'finder') fetchRecommendations();
+            if (tabName === 'database') loadDatabaseTable();
+        }
+
+        function setSamplePrompt(stream, interests) {
+            document.getElementById('input-stream').value = stream;
+            document.getElementById('input-interests').value = interests;
+            fetchRecommendations();
+        }
+
+        async function fetchRecommendations() {
+            const stream = document.getElementById("input-stream").value;
+            const interests = document.getElementById("input-interests").value;
+            const topN = document.getElementById("input-topn").value;
+
+            if (!interests.trim()) {
+                document.getElementById("results-container").innerHTML = `<p class="text-slate-500 text-sm col-span-2">Enter your interests above to see recommendations...</p>`;
+                document.getElementById("results-count-badge").innerText = "0 Matches";
+                return;
+            }
+
+            try {
+                const response = await fetch('/recommend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ student_stream: stream, student_interests: interests, top_n: parseInt(topN) })
+                });
+
+                const data = await response.json();
+                const container = document.getElementById("results-container");
+                container.innerHTML = "";
+
+                if (data.status === "success" && data.recommendations.length > 0) {
+                    document.getElementById("results-count-badge").innerText = `${data.recommendations.length} Matches Found`;
+                    data.recommendations.forEach(course => {
+                        container.innerHTML += `
+                            <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-3">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">${course.course_id}</span>
+                                        <h3 class="text-base font-bold text-white mt-1">${course.course_name}</h3>
+                                    </div>
+                                    <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                        Match: ${course.match_score}%
+                                    </span>
+                                </div>
+                                <p class="text-xs text-slate-300"><strong class="text-slate-400">Careers:</strong> ${course.career_paths}</p>
+                                <div class="text-[11px] text-slate-400 flex gap-4 pt-2 border-t border-slate-800">
+                                    <span><i class="fa-solid fa-graduation-cap mr-1"></i>Level: ${course.degree_level}</span>
+                                    <span><i class="fa-solid fa-clock mr-1"></i>Duration: ${course.duration_years} Years</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    document.getElementById("results-count-badge").innerText = "0 Matches";
+                    container.innerHTML = `<p class="text-amber-400 text-sm col-span-2">No matching courses found for this stream combination.</p>`;
+                }
+            } catch (error) {
+                console.error("API error:", error);
+            }
+        }
+
+        async function loadDatabaseTable() {
+            if (cachedCourses.length > 0) {
+                renderTableRows(cachedCourses);
+                return;
+            }
+            // Fetch top 43 results using a broad query to populate the database table view
+            try {
+                const response = await fetch('/recommend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ student_stream: "PCM", student_interests: "engineering medical arts science commerce management law agriculture", top_n: 50 })
+                });
+                const data = await response.json();
+                if (data.status === "success") {
+                    cachedCourses = data.recommendations;
+                    renderTableRows(cachedCourses);
+                }
+            } catch (e) {
+                console.error("Failed to load course database table", e);
+            }
+        }
+
+        function renderTableRows(courses) {
+            const tbody = document.getElementById("db-table-body");
+            tbody.innerHTML = "";
+            courses.forEach(c => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-900/50 transition-colors">
+                        <td class="p-3 font-mono text-indigo-400">${c.course_id}</td>
+                        <td class="p-3 font-semibold text-white">${c.course_name}</td>
+                        <td class="p-3">${c.degree_level}</td>
+                        <td class="p-3">${c.duration_years} Yrs</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">Active</span></td>
+                        <td class="p-3 text-slate-400 truncate max-w-xs">${c.career_paths}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function filterDatabaseTable() {
+            const query = document.getElementById("db-search").value.toLowerCase();
+            const filtered = cachedCourses.filter(c => 
+                c.course_name.toLowerCase().includes(query) || 
+                c.course_id.toLowerCase().includes(query) ||
+                c.career_paths.toLowerCase().includes(query)
+            );
+            renderTableRows(filtered);
+        }
+
+        window.onload = () => fetchRecommendations();
+    </script>
+</body>
+</html>
